@@ -32,6 +32,10 @@ struct Daily {
     weathercode: Vec<f32>,
 }
 
+/**
+ * Open-MeteoのWebAPIを呼び出して東京都の最高気温、最低気温、WMO気象コードを取得
+ * 初実行時、クレートを取得する段階で、openssl系のエラーが出た場合はapt updateしてから再度実行する
+ */
 #[tokio::main]
 async fn main() -> Result<()> {
     let client = Client::new();
@@ -41,7 +45,7 @@ async fn main() -> Result<()> {
         ("longitude", "139.6823"),  // 経度
         ("daily", "temperature_2m_max"),  // 最高気温
         ("daily", "temperature_2m_min"),  // 最低気温
-        ("daily", "weathercode"),  // 気象コード
+        ("daily", "weathercode"),  // WMO気象コード
         ("timezone", "Asia/Tokyo")  // タイムゾーン
     ];
     let response = client.get(url).query(&params).send().await?;
