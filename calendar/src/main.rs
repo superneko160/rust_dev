@@ -1,20 +1,24 @@
 extern crate chrono;
+extern crate chrono_tz;
+
 use chrono::prelude::*;
-use chrono::{Duration};
+use chrono::Duration;
+use chrono_tz::Asia::Tokyo;
 
 /**
  * 現在の月のカレンダーを表示
  */
 fn main() {
     // 現在の月を取得
-    let now = Utc::now();
+    let utc = Utc::now().naive_utc();
+    let now = Tokyo.from_utc_datetime(&utc);
     let (_is_common_era, year) = now.year_ce();
     println!("今月:{}-{:02}-{:02}({:?})", year as i32, now.month(), now.day(), now.weekday());
     // 現在の月の1日目の曜日を取得
-    let first_dt = Utc.ymd(year as i32, now.month(), 1);
+    let first_dt = Tokyo.ymd(year as i32, now.month(), 1);
     println!("月初:{}-{:02}-{:02}({:?})", year, first_dt.month(), first_dt.day(), first_dt.weekday());
     // 月末日を取得（今月の初日から+1ヶ月して-1日した日付を取得）
-    let last_dt = Utc.ymd(year as i32, now.month()+1, 1) + Duration::days(-1);
+    let last_dt = Tokyo.ymd(year as i32, now.month()+1, 1) + Duration::days(-1);
     println!("月末:{}-{:02}-{:02}({:?})", year, last_dt.month(), last_dt.day(), last_dt.weekday());
     // 曜日
     let weekday: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -54,12 +58,3 @@ fn main() {
     }
     println!();
 }
-
-/*
- * 型を表示
- */
- /*
-fn p_typeof<T>(_: T) {
-    println!("{}", std::any::type_name::<T>());
-}
-*/
