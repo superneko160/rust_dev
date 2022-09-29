@@ -5,7 +5,7 @@ use std::thread;
 use std::time::Duration;
 
 /**
- * ブラウザでindex.htmlを開く(http://localhost:7878)
+ * ブラウザでhello.htmlを開く(http://localhost:7878)
  * ポートフォワードの設定：.devcontainer/devcontainer.json
  * http://localhost:7878/sleepが読み込まれている間も、http://localhost:7878/が開ける（更新できる）
  * TODO: 無制限にスレッドを生成してしまうため修正する必要有
