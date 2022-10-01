@@ -1,6 +1,3 @@
-extern crate chrono;
-extern crate chrono_tz;
-
 use chrono::prelude::*;
 use chrono::Duration;
 use chrono_tz::Asia::Tokyo;
