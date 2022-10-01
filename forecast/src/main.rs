@@ -34,7 +34,7 @@ struct Daily {
 
 /**
  * Open-MeteoのWebAPIを呼び出して東京都の最高気温、最低気温、WMO気象コードを取得
- * 初実行時、クレートを取得する段階で、openssl系のエラーが出た場合はapt updateしてから再度実行する
+ * open-ssl系のエラーが出た場合、apt update + apt install libssl-dev + apt install pkg-config
  */
 #[tokio::main]
 async fn main() -> Result<()> {
