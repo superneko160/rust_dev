@@ -17,7 +17,6 @@ struct Tweet {
  * 特定のユーザの直近のツイート取得
  * 環境変数設定: export SCREEN_NAME="xxxxx" + export BEARER_TOKEN="xxxxx"
  * 環境変数確認: printenv
- * open-ssl系のエラーが出た場合、apt update + apt install libssl-dev + apt install pkg-config
  */
 #[tokio::main]
 async fn main() {
