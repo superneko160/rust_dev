@@ -1,13 +1,18 @@
+use std::env;
+use std::path::Path;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::collections::HashMap;
 
 /**
- * テキストファイルに書かれた文字を頻度分析
+ * コマンドライン引数で指定されたテキストファイルに書かれた文字を頻度分析
+ * ex) cargo run src/sample.txt
+ * ex) cargo run /workspaces/rust_dev/readme.md
  */
 fn main() {
     // 解析するファイルのパス設定
-    let text_path = String::from("/workspaces/rust_dev/freqency-analysis/src/sample.txt");
+    let args: Vec<String> = env::args().collect();
+    let text_path = Path::new(&args[1]);
     // 頻度分析
     print_result(sort_dict(freqency_analysis(get_text(text_path))));
 }
@@ -15,10 +20,14 @@ fn main() {
 /**
  * テキストを取得
  */
-fn get_text(text_path: String) -> String {
+fn get_text(text_path: &Path) -> String {
+    let file = match File::open(text_path) {
+        Err(why) => panic!("{}", why),
+        Ok(file) => file,
+    };
     let mut file_contents = String::new();
     // ファイルを1行ずつ読み込み
-    for line in BufReader::new(File::open(text_path).unwrap()).lines() {
+    for line in BufReader::new(file).lines() {
         let l = line.expect("something went wrong reading the line");
         file_contents.push_str(&l.trim());  // 先頭と末尾の空白を除去
     }
@@ -51,7 +60,10 @@ fn sort_dict(dict: HashMap<char, u32>) -> Vec<(char, u32)> {
 fn print_result(vec: Vec<(char, u32)>) {
     for val in vec {
         if val.0 == ' ' {
-            println!("空白: {}回", val.1)
+            println!("半角空白: {}回", val.1)
+        }
+        else if val.0 == '　' {
+            println!("全角空白: {}回", val.1)
         }
         else {
             println!("{}: {}回", val.0, val.1);
@@ -65,8 +77,8 @@ mod tests {
 
     #[test]
     fn test_get_text() {
-        let text_path = String::from("/workspaces/rust_dev/freqency-analysis/src/sample.txt");
-        let result = String::from("ABaCDF/$XYZ XAXXX");
+        let text_path = Path::new(&"/workspaces/rust_dev/freqency-analysis/src/sample.txt");
+        let result = String::from("ABa　あCDF/$XYZ XAXXX");
         assert_eq!(result, get_text(text_path));
     }
 
