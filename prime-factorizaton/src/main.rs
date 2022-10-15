@@ -10,15 +10,20 @@ fn main() {
     // 数値に変換
     let n: u64 = match args[1].trim().parse() {
         Ok(n) => n,
-        Err(_e) => 1,
+        Err(_e) => 1,  // アルファベットや未入力の場合は1を返す
     };
     // 素因数分解
     if n > 1 {
         println!("{:?}", prime_factorize(n));
     }
-    println!("2以上の正の整数を入力してください");
+    else {
+        println!("2以上の正の整数を入力してください");
+    }
 }
 
+/**
+ * 力技で素因数分解を実施
+ */
 fn prime_factorize(n: u64) -> Vec<u64> {
     let mut result = n;
     for i in 2..((n as f64).sqrt() as u64)+1 {
