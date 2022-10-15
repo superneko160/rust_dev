@@ -55,18 +55,39 @@ fn sort_dict(dict: HashMap<char, u32>) -> Vec<(char, u32)> {
 }
 
 /**
+ * すべての文字数の合計を算出
+ */
+ fn count_all_char(vec: &Vec<(char, u32)>) -> u32 {
+    let mut count = 0;
+    for val in vec {
+        count += val.1;
+    }
+    count
+ }
+
+/*
+ * 割合を計算
+ */
+fn calc_rate(count: f32, all_count: f32) -> f32 {
+   (count / all_count) * 100.0
+}
+
+/**
  * 解析結果の表示
  */
 fn print_result(vec: Vec<(char, u32)>) {
+    // 各文字の総合計を取得
+    let all_char_count = count_all_char(&vec) as f32; 
+    // テキスト内での文字の出現回数と比率を表示
     for val in vec {
         if val.0 == ' ' {
-            println!("半角空白: {}回", val.1)
+            println!("半角空白: {}回  {}%", val.1, calc_rate(val.1 as f32, all_char_count));
         }
         else if val.0 == '　' {
-            println!("全角空白: {}回", val.1)
+            println!("全角空白: {}回  {}%", val.1, calc_rate(val.1 as f32, all_char_count));
         }
         else {
-            println!("{}: {}回", val.0, val.1);
+            println!("{}: {}回  {}%", val.0, val.1, calc_rate(val.1 as f32, all_char_count));
         }
     }
 }
@@ -94,5 +115,18 @@ mod tests {
         let dict = HashMap::from([('a',2),('b',1),('c',3)]);
         let result: Vec<(char, u32)> = vec![('c',3),('a',2),('b',1)];
         assert_eq!(result, sort_dict(dict));
+    }
+
+    #[test]
+    fn test_count_all_char() {
+        let vec: Vec<(char, u32)> = vec![('c',3),('a',2),('b',1)];
+        let result = 6;
+        assert_eq!(result, count_all_char(&vec));
+    }
+
+    #[test]
+    fn test_calc_rate() {
+       let result: f32 = 24.0;
+        assert_eq!(result, calc_rate(12 as f32, 50 as f32));
     }
 }
