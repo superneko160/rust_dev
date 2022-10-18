@@ -34,7 +34,10 @@ fn main() {
     // データの表示
     // print_data(get_data_mtm_percent_over_stdval(data, 4.0, true));  // 前月比+4%位以上
     // print_data(get_data_mtm_percent_over_stdval(data, -4.0, false));  // 前月比-4%以上
-    print_data(get_data_target_month(data, 12));
+    // print_data(get_data_target_ym(data, 0, 0));  // 全データを取得
+    // print_data(get_data_target_ym(data, 15, 0));  // 2015年の全データを取得
+    // print_data(get_data_target_ym(data, 0, 1));  // すべての年の1月のデータを取得
+    print_data(get_data_target_ym(data, 15, 1));  // 2015年1月のデータを取得
 }
 
 /**
@@ -82,22 +85,43 @@ fn get_data_mtm_percent_over_stdval(pre_data: Vec<Data>, stdval: f32, over: bool
 /**
  * 指定された月（target_month）のデータのみ取得
  * @pre_data: Vec<Data> CSVから取得したデータ
- * @target_month: u8 指定する月(1-12)
+ * @target_year: u8 指定する年(指定しない場合は0を設定、指定する場合20xx年のxx(下2桁)指定)
+ * @target_month: u8 指定する月(指定しない場合0を設定)
  * @return: Vec<Data> 整形後データ
  */
-fn get_data_target_month(pre_data: Vec<Data>, target_month: u8) -> Vec<Data> {
+fn get_data_target_ym(pre_data: Vec<Data>, target_year: u8, target_month: u8) -> Vec<Data> {
     let mut data = Vec::new();
-    // 1−12以外の数値が引数に指定された場合、空データを返す
-    if target_month > 12 || target_month < 1 {
-        println!("An invalid number is passed as an argument!");
+  // 0−12以外の数値が月指定の引数に設定された場合、空データを返す
+    if target_month > 12 || target_month < 0 {
+        println!("An invalid number is passed as an argument: target_month");
         return data;
     }
     for val in pre_data {
+        // 日付情報dateを年・月・日に分割し、数値に変換
         let tmp: Vec<&str> = val.date.split('/').collect();
+        let year = tmp[0].parse::<u8>().unwrap();
         let month = tmp[1].parse::<u8>().unwrap();
-        // 指定された月のデータのみ取得
-        if month == target_month {
-             data.push(val);
+        // 年指定無 and 月指定無
+        if target_year == 0 && target_month == 0 {
+            data.push(val);
+        }
+        // 年指定有 and 月指定無
+        else if target_year != 0 && target_month == 0 {
+            if target_year == year {
+                data.push(val);
+            }
+        }
+        // 年指定無 and 月指定有
+        else if target_year == 0 && target_month <= 12 {
+            if target_month == month {
+                data.push(val);
+            }
+        }
+        // 年指定有 and 月指定有
+        else if target_year != 0 && target_month <= 12 {
+            if target_year == year && target_month == month {
+                data.push(val);
+            }
         }
     }
     data
