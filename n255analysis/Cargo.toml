@@ -1,5 +1,5 @@
 [package]
-name = "n255-analysis"
+name = "n255analysis"
 version = "0.1.0"
 edition = "2021"
 

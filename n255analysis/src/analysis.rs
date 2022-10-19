@@ -1,12 +1,11 @@
 use std::fs;
-use std::process;
 use std::path::Path;
 use serde::Deserialize;
 use anyhow::Result;
 
 // 数値がStringなのは値にカンマが入っているため
 #[derive(Debug, Deserialize)]
-struct Data {
+pub struct Data {
     date: String,  // 日付
     open: String,  // 始値
     high: String,  // 高値
@@ -18,34 +17,11 @@ struct Data {
 }
 
 /**
- * 日経平均のCSVデータを解析
- */
-fn main() {
-    // パス設定
-    let csv_path = Path::new("/workspaces/rust_dev/n255-analysis/data/n255mtm_2013-2022.csv");
-    // データの取得
-    let data = match read_csv(csv_path) {
-        Ok(data) => data,
-        Err(e) => {
-            println!("Error: {}", e);
-            process::exit(1);
-        }
-    };
-    // データの表示
-    // print_data(get_data_mtm_percent_over_stdval(data, 4.0, true));  // 前月比+4%位以上
-    // print_data(get_data_mtm_percent_over_stdval(data, -4.0, false));  // 前月比-4%以上
-    // print_data(get_data_target_ym(data, 0, 0));  // 全データを取得
-    // print_data(get_data_target_ym(data, 15, 0));  // 2015年の全データを取得
-    // print_data(get_data_target_ym(data, 0, 1));  // すべての年の1月のデータを取得
-    print_data(get_data_target_ym(data, 15, 1));  // 2015年1月のデータを取得
-}
-
-/**
  * CSVデータの取得
- * @csv_path: &Path CSVファイルのパス
  * @return: Result<Vec<Data>> CSVから取得したデータ
  */
-fn read_csv(csv_path: &Path) -> Result<Vec<Data>> {
+pub fn read_csv() -> Result<Vec<Data>> {
+    let csv_path = Path::new("/workspaces/rust_dev/n255analysis/data/n255mtm_2013-2022.csv");
     let mut data = Vec::new();
     let csv_text = fs::read_to_string(csv_path)?;
     let mut rdr = csv::Reader::from_reader(csv_text.as_bytes());
@@ -63,7 +39,7 @@ fn read_csv(csv_path: &Path) -> Result<Vec<Data>> {
 * @over: bool true:基準値位以上、false:基準値以下
 * @return: Vec<Data> 整形後データ
  */
-fn get_data_mtm_percent_over_stdval(pre_data: Vec<Data>, stdval: f32, over: bool) -> Vec<Data> {
+pub fn get_data_mtm_percent_over_stdval(pre_data: Vec<Data>, stdval: f32, over: bool) -> Vec<Data> {
     let mut data = Vec::new();
     for val in pre_data {
         // 前月比が基準値以上だった月だけ取得
@@ -89,10 +65,10 @@ fn get_data_mtm_percent_over_stdval(pre_data: Vec<Data>, stdval: f32, over: bool
  * @target_month: u8 指定する月(指定しない場合0を設定)
  * @return: Vec<Data> 整形後データ
  */
-fn get_data_target_ym(pre_data: Vec<Data>, target_year: u8, target_month: u8) -> Vec<Data> {
+pub fn get_data_target_ym(pre_data: Vec<Data>, target_year: u8, target_month: u8) -> Vec<Data> {
     let mut data = Vec::new();
   // 0−12以外の数値が月指定の引数に設定された場合、空データを返す
-    if target_month > 12 || target_month < 0 {
+    if target_month > 12 {
         println!("An invalid number is passed as an argument: target_month");
         return data;
     }
@@ -131,7 +107,7 @@ fn get_data_target_ym(pre_data: Vec<Data>, target_year: u8, target_month: u8) ->
  * データの表示
  * @data: Vec<Data> 表示するデータ
  */
-fn print_data(data: Vec<Data>) {
+pub fn print_data(data: Vec<Data>) {
     for val in data {
         println!("{}  {}  {}%", val.date, val.month_to_month, val.month_to_month_percent);
     }
