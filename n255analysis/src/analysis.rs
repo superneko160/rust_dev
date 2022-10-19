@@ -3,6 +3,9 @@ use std::path::Path;
 use serde::Deserialize;
 use anyhow::Result;
 
+// 定数
+const CSV_PATH: &str = "/workspaces/rust_dev/n255analysis/data/n255mtm_2013-2022.csv";
+
 // 数値がStringなのは値にカンマが入っているため
 #[derive(Debug, Deserialize)]
 pub struct Data {
@@ -21,7 +24,7 @@ pub struct Data {
  * @return: Result<Vec<Data>> CSVから取得したデータ
  */
 pub fn read_csv() -> Result<Vec<Data>> {
-    let csv_path = Path::new("/workspaces/rust_dev/n255analysis/data/n255mtm_2013-2022.csv");
+    let csv_path = Path::new(CSV_PATH);
     let mut data = Vec::new();
     let csv_text = fs::read_to_string(csv_path)?;
     let mut rdr = csv::Reader::from_reader(csv_text.as_bytes());
