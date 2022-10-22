@@ -14,10 +14,10 @@ fn main() {
         }
     };
     // データの表示
-    // analysis::print_data(analysis::get_data_mtm_percent_over_stdval(data, 4.0, true));  // 前月比+4%位以上
-    // analysis::print_data(analysis::get_data_mtm_percent_over_stdval(data, -4.0, false));  // 前月比-4%以上
+    // analysis::print_data(analysis::get_data_mtm_percent_over_stdval(data, 2.0, true));  // 前日比、前月比+x%位以上
+    // analysis::print_data(analysis::get_data_mtm_percent_over_stdval(data, -2.0, false));  // 前日比、前月比-x%以上
     // analysis::print_data(analysis::get_data_target_ym(data, 0, 0));  // 全データを取得
-    // analysis::print_data(analysis::get_data_target_ym(data, 15, 0));  // 2015年の全データを取得
-    // analysis::print_data(analysis::get_data_target_ym(data, 0, 1));  // すべての年の1月のデータを取得
-    analysis::print_data(analysis::get_data_target_ym(data, 15, 1));  // 2015年1月のデータを取得
+    // analysis::print_data(analysis::get_data_target_ym(data, 21, 0));  // 20xx年の全データを取得
+    // analysis::print_data(analysis::get_data_target_ym(data, 0, 1));  // すべての年のx月のデータを取得
+     analysis::print_data(analysis::get_data_target_ym(data, 22, 8));  // 20xx年x月のデータを取得
 }

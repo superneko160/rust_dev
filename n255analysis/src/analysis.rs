@@ -4,7 +4,8 @@ use serde::Deserialize;
 use anyhow::Result;
 
 // 定数
-const CSV_PATH: &str = "/workspaces/rust_dev/n255analysis/data/n255mtm_2013-2022.csv";
+// const CSV_PATH: &str = "/workspaces/rust_dev/n255analysis/data/n255mtm_2013-2022.csv";
+const CSV_PATH: &str = "/workspaces/rust_dev/n255analysis/data/n255dtd_20210804-20221020.csv";
 
 // 数値がStringなのは値にカンマが入っているため
 #[derive(Debug, Deserialize)]
@@ -14,8 +15,8 @@ pub struct Data {
     high: String,  // 高値
     low: String,  // 安値
     close: String,  // 終値
-    month_to_month: String,  // 前月比
-    month_to_month_percent: f32,  // 前月比（％）
+    previous: String,  // 前日比・前月比
+    previous_ratio: f32,  // 前日比・前日比（％）
     volume: String,  // 売買高
 }
 
@@ -36,7 +37,7 @@ pub fn read_csv() -> Result<Vec<Data>> {
 }
 
 /**
- * 前月比（％）が基準値（stdval）以上または以下のデータのみ取得
+ * 前日比・前月比（％）が基準値（stdval）以上または以下のデータのみ取得
 * @pre_data: Vec<Data> CSVから取得したデータ
 * @stdval: f32 基準値
 * @over: bool true:基準値位以上、false:基準値以下
@@ -45,15 +46,15 @@ pub fn read_csv() -> Result<Vec<Data>> {
 pub fn get_data_mtm_percent_over_stdval(pre_data: Vec<Data>, stdval: f32, over: bool) -> Vec<Data> {
     let mut data = Vec::new();
     for val in pre_data {
-        // 前月比が基準値以上だった月だけ取得
+        // 前日比・前月比が基準値以上だった月だけ取得
         if over {
-            if val.month_to_month_percent >= stdval {
+            if val.previous_ratio >= stdval {
                 data.push(val);
             }
         }
-        // 前月比が基準値以下だった月だけ取得
+        // 前日比・前月比が基準値以下だった月だけ取得
         else {
-            if val.month_to_month_percent <= stdval {
+            if val.previous_ratio <= stdval {
                 data.push(val);
             }
         }
@@ -112,6 +113,6 @@ pub fn get_data_target_ym(pre_data: Vec<Data>, target_year: u8, target_month: u8
  */
 pub fn print_data(data: Vec<Data>) {
     for val in data {
-        println!("{}  {}  {}%", val.date, val.month_to_month, val.month_to_month_percent);
+        println!("{}  {}  {}%", val.date, val.previous, val.previous_ratio);
     }
 }
