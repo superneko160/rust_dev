@@ -4,8 +4,9 @@ use serde::Deserialize;
 use anyhow::Result;
 
 // 定数
-// const CSV_PATH: &str = "/workspaces/rust_dev/n255analysis/data/n255mtm_2013-2022.csv";
-const CSV_PATH: &str = "/workspaces/rust_dev/n255analysis/data/n255dtd_20210804-20221020.csv";
+// const CSV_PATH: &str = "/workspaces/rust_dev/stock_analysis/data/n255mtm_2013-2022.csv";
+// const CSV_PATH: &str = "/workspaces/rust_dev/stock_analysis/data/n255dtd_20210804-20221020.csv";
+const CSV_PATH: &str = "/workspaces/rust_dev/stock_analysis/data/topixdtd_20210804-20221020.csv";
 
 // 数値がStringなのは値にカンマが入っているため
 #[derive(Debug, Deserialize)]
