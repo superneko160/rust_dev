@@ -20,6 +20,7 @@ mod tests {
 
     #[test]
     fn test_fizzbuzz() {
+        assert_eq!(fizzbuzz(0), "0".to_string());
         assert_eq!(fizzbuzz(1), "1".to_string());
         assert_eq!(fizzbuzz(3), "Fizz".to_string());
         assert_eq!(fizzbuzz(5), "Buzz".to_string());
