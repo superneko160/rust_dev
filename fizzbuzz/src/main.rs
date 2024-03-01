@@ -1,8 +1,11 @@
 fn main() {
-    (1..=100).for_each(|num| println!("{}", fizzbuzz(num)));
+    (0..=100).for_each(|num| println!("{}", fizzbuzz(num)));
 }
 
 fn fizzbuzz(num: i32) -> String {
+    if num == 0 {
+        return num.to_string();
+    }
     match (num % 3, num % 5) {
         (0, 0) => "FizzBuzz".to_string(),
         (0, _) => "Fizz".to_string(),
@@ -21,5 +24,9 @@ mod tests {
         assert_eq!(fizzbuzz(3), "Fizz".to_string());
         assert_eq!(fizzbuzz(5), "Buzz".to_string());
         assert_eq!(fizzbuzz(15), "FizzBuzz".to_string());
+        assert_eq!(fizzbuzz(-1), "-1".to_string());
+        assert_eq!(fizzbuzz(-3), "Fizz".to_string());
+        assert_eq!(fizzbuzz(-5), "Buzz".to_string());
+        assert_eq!(fizzbuzz(-15), "FizzBuzz".to_string());
     }
 }
