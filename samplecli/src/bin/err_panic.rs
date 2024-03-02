@@ -1,3 +1,4 @@
+// 正常終了時にはi32型を返し、失敗時にはpanicを発生させる
 fn get_int_from_file() -> i32 {
     let path = "number.txt";
 
