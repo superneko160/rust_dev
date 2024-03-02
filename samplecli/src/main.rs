@@ -1,3 +1,5 @@
+use std::io::{BufRead, BufReader};
+use std::fs::File;
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -17,9 +19,16 @@ struct Opts {
 
 fn main() {
     let opts = Opts::parse();
-    match opts.formula_file {
-        Some(file) => println!("File specified: {}", file),
-        None => println!("No file specified."),
+    if let Some(path) = opts.formula_file {
+        let f = File::open(path).unwrap();
+        let reader = BufReader::new(f);
+        for line in reader.lines() {
+            let line = line.unwrap();
+            println!("{}", line);
+        }
     }
-    println!("Is verbosity specified?: {}", opts.verbose);
+    else {
+        // ファイルを指定しなかった場合
+        println!("No file is specified");
+    }
 }
