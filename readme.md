@@ -1,31 +1,37 @@
-# rust_dev  
+# rust_dev
 
-For Studying Rust.
+For learning Rust.
 
 ## VSCode extension
+
  - Dev Containers(Visual Studio Code Remote - Containers)
 
-## Versions  
+## Versions
 
 ```
 rustc --version
-```  
-rustc 1.63.0 (4b91a6ea7 2022-08-08)  
+```
+
+rustc 1.80.1 (3f5fd8dd4 2024-08-06) 
 
 ```
 cargo --version
-```  
-cargo 1.63.0 (fd9c4297c 2022-07-01)  
+```
 
-## Run  
+cargo 1.80.1 (376290515 2024-07-16)
+
+## Run
 
 ```
 cd project
 ```
+
 and
+
 ```
 cargo run
-```  
+```
 
-## Reference  
+## Reference
+
  - [Open-Meteo Weather Forecast API](https://open-meteo.com/en/docs)
