@@ -6,9 +6,9 @@ use minigrep::Config;
 /// コマンドライン引数で第1引数に対象となる文字、第2引数に対象となるファイルを指定
 /// ex) cargo run frog poem.txt
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args = env::args();
 
-    let config: Config = Config::new(&args).unwrap_or_else(|err| {
+    let config: Config = Config::new(args).unwrap_or_else(|err| {
         println!("Problem parsing arguments: {}", err);
         process::exit(1);
     });
