@@ -54,6 +54,8 @@ mod test {
 Rust:
 safe, fast, productive.
 Pick there.";
-            assert_eq!(vec!["safe, fast, productive."], search(query, contents));
+
+        // 正常系：productiveのなかにductが入っている
+        assert_eq!(vec!["safe, fast, productive."], search(query, contents));
     }
 }
