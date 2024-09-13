@@ -1,59 +1,96 @@
-use std::io;
+use std::io::{self, Write};
 use rand::Rng;
 
 const HAND: [&str; 3] = ["グー", "チョキ", "パー"];
+const MIN_HAND: i32 = 0;
+const MAX_HAND: i32 = 2;
+
+#[derive(PartialEq, Debug)]
+enum GameResult {
+    Draw,
+    PlayerWin,
+    PlayerLose,
+}
 
 /**
  * CPUとコマンドライン上でじゃんけん
  */
 fn main() {
     loop {
-        println!("じゃんけんの手を選択してください(0:グー,1:チョキ,2:パー)");
-        let mut player_hand = String::new();
-        // 入力受付
-        io::stdin().read_line(&mut player_hand).expect("入力受付に失敗");
-
-        // 入力された手を数値に変換
-        let player_hand: i32 = match player_hand.trim().parse() {
-            Ok(num) => num,
-            Err(_) => {
-                println!(" 数値を入力してください");
-                continue;
-            }
-        };
-
-        if player_hand == 0 || player_hand == 1 || player_hand == 2 {
-            // CPUの手をランダムで取得
-            let cpu_hand: i32 = rand::thread_rng().gen_range(0..3);
-
-            // プレイヤーとCPUの手を表示
-            println!("あなたの手:{}", HAND[player_hand as usize]);
-            println!("CPUの手:{}", HAND[cpu_hand as usize]);
-
-            // 勝者を判定しループ離脱（あいこならば継続）
-            match judge_winner(player_hand - cpu_hand) {
-                1 | 2 => break,
-                _ => continue
-            }
+        match play_round() {
+            GameResult::Draw => continue,
+            _ => break,
         }
     }
 }
 
+/// ゲームをプレイ
+fn play_round() -> GameResult {
+    // プレイヤとCPUの手を取得
+    let player_hand = get_player_hand();
+    let cpu_hand = get_cpu_hand();
+    // プレイヤとCPUの手を表示
+    display_hands(player_hand, cpu_hand);
+    // プレイヤとCPUの手を比較して勝敗を取得
+    let result = judge_winner(player_hand, cpu_hand);
+    // 勝敗を表示
+    display_result(&result);
+
+    result
+}
+
+/// プレイヤの手を取得
+/// @returns i32
+fn get_player_hand() -> i32 {
+    loop {
+        print!("じゃんけんの手を選択してください(0:グー / 1:チョキ / 2:パー):");
+        io::stdout().flush().expect("Failed to flush stdout");
+
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).expect("Failed to read line");
+
+        match input.trim().parse() {
+            Ok(num) if (MIN_HAND..=MAX_HAND).contains(&num) => return num,
+            _ => println!("0, 1, 2 のいずれかの数値を入力してください"),
+        }
+    }
+}
+
+/// CPUの手を取得
+/// @returns i32
+fn get_cpu_hand() -> i32 {
+    rand::thread_rng().gen_range(MIN_HAND..=MAX_HAND)
+}
+
 /// じゃんけんの勝敗を判定
-/// @param i32 ユーザの手 - CPUの手（2 or -1:ユーザの勝利、1 or -2:CPUの勝利、0:あいこ）
-/// @returns i8 0:あいこ、1:ユーザの勝利、2:ユーザの敗北
-/// 
-fn judge_winner(result: i32) -> i8 {
-    if result == 2 || result == -1 {
-        println!("あなたの勝ちです");
-        return 1;
+/// @param i32 プレイヤの手
+/// @param i32 CPUの手
+/// @returns GameResult
+fn judge_winner(player_hand: i32, cpu_hand: i32) -> GameResult {
+    match (player_hand - cpu_hand + 3) % 3 {
+        0 => GameResult::Draw,
+        1 => GameResult::PlayerLose,
+        2 => GameResult::PlayerWin,
+        _ => unreachable!(),  // 理論上決して到達しないことを示す（実行時はパニック）
     }
-    if result == 1 || result == -2 {
-        println!("あなたの負けです");
-        return 2;
+}
+
+/// プレイヤとCPUの手を表示
+/// @param i32 player_hand プレイヤの手
+/// @param i32 cpu_hand CPUの手
+fn display_hands(player_hand: i32, cpu_hand: i32) {
+    println!("あなたの手: {}", HAND[player_hand as usize]);
+    println!("CPUの手: {}", HAND[cpu_hand as usize]);
+}
+
+/// 勝敗を表示
+/// @param &GameResult
+fn display_result(result: &GameResult) {
+    match result {
+        GameResult::Draw => println!("あいこです"),
+        GameResult::PlayerWin => println!("あなたの勝ちです"),
+        GameResult::PlayerLose => println!("あなたの負けです"),
     }
-    println!("あいこです");
-    return 0;
 }
 
 #[cfg(test)]
@@ -62,34 +99,31 @@ mod tests {
 
     #[test]
     fn test_win_judge_winner() {  // ユーザが勝利するケース
-        let win_result: i8 = 1;
         // ユーザ：パー vs CPU：グー
-        assert_eq!(win_result, judge_winner(2 - 0));
+        assert_eq!(GameResult::PlayerWin, judge_winner(2, 0));
         // ユーザ：グー vs CPU：チョキ
-        assert_eq!(win_result, judge_winner(0 - 1));
+        assert_eq!(GameResult::PlayerWin, judge_winner(0, 1));
         // ユーザ：チョキ vs CPU：パー
-        assert_eq!(win_result, judge_winner(1 - 2));
+        assert_eq!(GameResult::PlayerWin, judge_winner(1, 2));
     }
 
     #[test]
     fn test_lose_judge_winner() {  // ユーザが敗北するケース
-        let win_result: i8 = 2;
         // ユーザ：チョキ vs CPU：グー
-        assert_eq!(win_result, judge_winner(1 - 0));
+        assert_eq!(GameResult::PlayerLose, judge_winner(1, 0));
         // ユーザ：パー vs CPU：チョキ
-        assert_eq!(win_result, judge_winner(2 - 1));
+        assert_eq!(GameResult::PlayerLose, judge_winner(2, 1));
         // ユーザ：グー vs CPU：パー
-        assert_eq!(win_result, judge_winner(0 - 2));
+        assert_eq!(GameResult::PlayerLose, judge_winner(0, 2));
     }
 
     #[test]
     fn test_draw_judge_winner() {  // 引き分けのケース
-        let win_result: i8 = 0;
         // ユーザ：グー vs CPU：グー
-        assert_eq!(win_result, judge_winner(0 - 0));
+        assert_eq!(GameResult::Draw, judge_winner(0, 0));
         // ユーザ：チョキ vs CPU：チョキ
-        assert_eq!(win_result, judge_winner(1 - 1));
+        assert_eq!(GameResult::Draw, judge_winner(1, 1));
         // ユーザ：パー vs CPU：パー
-        assert_eq!(win_result, judge_winner(2 - 2));
+        assert_eq!(GameResult::Draw, judge_winner(2, 2));
     }
 }
