@@ -2,62 +2,84 @@ use chrono::prelude::*;
 use chrono::Duration;
 use chrono_tz::Asia::Tokyo;
 
+#[derive(Debug)]
+struct CalendarMonth {
+    year: i32,
+    month: u32,
+    days: Vec<Option<u32>>,
+}
+
 /**
  * 現在の月のカレンダーを表示
  */
 fn main() {
-    // 現在の月を取得
-    let utc = Utc::now().naive_utc();
-    let now = Tokyo.from_utc_datetime(&utc);
-    let (_is_common_era, year) = now.year_ce();
-    println!("今月:{}-{:02}-{:02}({:?})", year as i32, now.month(), now.day(), now.weekday());
+    let now = Utc::now().with_timezone(&Tokyo);
+    let calendar = generate_calendar(now.year(), now.month());
+    display_calendar(&calendar);
+}
 
+/// カレンダを作成
+/// @param i32 year
+/// @param u32 month
+/// @return CalendarMonth
+fn generate_calendar(year: i32, month: u32) -> CalendarMonth {
     // 現在の月の1日目の曜日を取得
-    let first_dt = Tokyo.with_ymd_and_hms(year as i32, now.month(), 1, 0, 0, 0).unwrap();
-    println!("月初:{}-{:02}-{:02}({:?})", year, first_dt.month(), first_dt.day(), first_dt.weekday());
+    let first_dt = Tokyo.with_ymd_and_hms(year, month, 1, 0, 0, 0).unwrap();
 
     // 月末日を取得（今月の初日から+1ヶ月して-1日した日付を取得）
-    let last_dt = Tokyo.with_ymd_and_hms(year as i32, now.month()+1, 1, 0, 0, 0).unwrap() + Duration::days(-1);
-    println!("月末:{}-{:02}-{:02}({:?})", year, last_dt.month(), last_dt.day(), last_dt.weekday());
+    let last_dt = (first_dt + Duration::days(32)).date_naive().with_day(1).unwrap() - Duration::days(1);
 
-    // 曜日
-    let weekday: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    let mut days = vec![None; first_dt.weekday().num_days_from_sunday() as usize];
+    days.extend((1..=last_dt.day()).map(Some));
 
-    // 月初日の曜日からスタート地点を決定
-    let mut start_p = 0;
-    for i in 0..7 {
-        if weekday[i] == &first_dt.weekday().to_string() {
-            start_p = i;
-            break;
-        }
+    CalendarMonth {
+        year,
+        month,
+        days,
     }
+}
 
-    // カレンダ作成
-    let mut cal = Vec::new();
-    for _i in 0..start_p {
-        cal.push(99);
-    }
-    for i in 1..last_dt.day()+1 {
-        cal.push(i);
-    }
+/// カレンダを表示
+/// @param &CalendarMonth
+fn display_calendar(calendar: &CalendarMonth) {
+    println!("{}年{}月のカレンダー", calendar.year, calendar.month);
+    println!(" Sun Mon Tue Wed Thu Fri Sat");
 
-   // カレンダ表示
-    for elm in weekday {
-        print!(" {}", elm);
-    }
-    for (i, val) in cal.iter().enumerate() {  // val: &u32
-        if i % 7 == 0 {
+    for (i, day) in calendar.days.iter().enumerate() {
+        if i % 7 == 0 && i != 0 {
             println!();
         }
-        if val == &99 {
-            print!("    ");
-        }
-        else if val != &99 && val >= &10 {
-            print!("  {}", val);
-        }
-        else {
-            print!("   {}", val);
+        match day {
+            Some(d) => print!("{:4}", d),
+            None => print!("    "),
         }
     }
     println!();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_generate_calendar() {
+        let calendar = generate_calendar(2023, 5);
+        assert_eq!(calendar.year, 2023);
+        assert_eq!(calendar.month, 5);
+        assert_eq!(calendar.days[0], None);
+        assert_eq!(calendar.days[1], Some(1));
+        assert_eq!(calendar.days[31], Some(31));
+    }
+
+    #[test]
+    fn test_display_calendar() {
+        let calendar = CalendarMonth {
+            year: 2023,
+            month: 5,
+            days: vec![None, Some(1), Some(2), Some(3), Some(4), Some(5), Some(6)],
+        };
+
+        // このテストは該当関数がパニックにならないことを保証するだけ
+        display_calendar(&calendar);
+    }
 }
