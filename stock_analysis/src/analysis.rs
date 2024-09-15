@@ -12,13 +12,13 @@ const CSV_PATH: &str = "/workspaces/rust_dev/stock_analysis/data/topixdtd_202108
 #[derive(Debug, Deserialize)]
 pub struct Data {
     date: String,  // 日付
-    open: String,  // 始値
-    high: String,  // 高値
-    low: String,  // 安値
-    close: String,  // 終値
+    // open: String,  // 始値
+    // high: String,  // 高値
+    // low: String,  // 安値
+    // close: String,  // 終値
     previous: String,  // 前日比・前月比
     previous_ratio: f32,  // 前日比・前日比（％）
-    volume: String,  // 売買高
+    // volume: String,  // 売買高
 }
 
 /**
