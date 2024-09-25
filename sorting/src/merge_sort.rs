@@ -1,5 +1,8 @@
 /// マージソート（破壊的）
-/// @param &mut [T] list 並び替える要素が格納されたリスト（配列、ベクタ等）
+///
+/// # Arguments
+///
+/// * `list` - 並び替える要素が格納されたリスト
 pub fn merge_sort<T: Ord + Copy>(list: &mut [T]) {
     if list.len() > 1 {
         // 中央のインデックス取得
@@ -14,8 +17,11 @@ pub fn merge_sort<T: Ord + Copy>(list: &mut [T]) {
 }
 
 /// マージ
-/// @param &mut [T] list 並び替える要素が格納されたリスト（配列、ベクタ等）
-/// @param usize mid  リスト中央のインデックス
+///
+/// # Arguments
+///
+/// * `list` - 並び替える要素が格納されたリスト
+/// * `mid` - リスト中央のインデックス
 fn merge<T: Ord + Copy>(list: &mut [T], mid: usize) {
 
     let left = list[..mid].to_vec();

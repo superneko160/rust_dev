@@ -1,8 +1,10 @@
 use crate::insertion_sort::insertion_sort;
 
 /// バケットソート（バケツソート）
-/// @param &[usize] list 並び替える要素が格納されたリスト
-/// @return Vec<usize> ソート後ベクタ
+///
+/// # Arguments
+///
+/// * `list` - 並び替える要素が格納されたリスト
 pub fn bucket_sort(list: &[usize]) -> Vec<usize> {
     if list.is_empty() {
         return vec![];

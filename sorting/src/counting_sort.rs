@@ -1,7 +1,10 @@
 /// カウンティングソート（破壊的）
 /// 同じ値が複数ある場合に、計算量が少なくなり、処理速度が向上する可能性有
-/// @param &mut [usize] list 並び替える要素が格納されたリスト
-/// @param usize maxval 入力がとり得る最大値（[2, 15, 7]の場合15）
+///
+/// # Arguments
+///
+/// * `list` - 並び替える要素が格納されたリスト
+/// * `maxval` - 入力がとり得る最大値（[2, 15, 7]の場合15）
 pub fn counting_sort(list: &mut [usize], maxval: usize) {
 
     // カウント用ベクタ

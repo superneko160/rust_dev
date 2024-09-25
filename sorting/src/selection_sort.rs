@@ -1,6 +1,9 @@
 /// 選択ソート（破壊的）
-/// @param &mut [T] list 並び替える要素が格納されたリスト（配列、ベクタ等）
-/// @param bool reverse true:降順, false:昇順
+///
+/// # Arguments
+///
+/// * `list` - 並び替える要素が格納されたリスト
+/// * `reverse` - true:降順, false:昇順
 pub fn selection_sort<T: Ord>(list: &mut [T], reverse: bool) {
 
     let length = list.len();
