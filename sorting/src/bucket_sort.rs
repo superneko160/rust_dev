@@ -5,6 +5,10 @@ use crate::insertion_sort::insertion_sort;
 /// # Arguments
 ///
 /// * `list` - 並び替える要素が格納されたリスト
+/// 
+/// # Returns
+///
+/// * ソートされた新しいリスト
 pub fn bucket_sort(list: &[usize]) -> Vec<usize> {
     if list.is_empty() {
         return vec![];
