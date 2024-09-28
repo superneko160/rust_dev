@@ -9,7 +9,7 @@ use std::cmp::PartialEq;
 /// 
 /// # Returns
 ///
-/// * 探索対象の格納されているインデックス
+/// * 探索対象の格納されているリストのインデックス
 pub fn linear_search<T: PartialEq>(item: &T, list: &[T]) -> Option<usize> {
     for (i, data) in list.iter().enumerate() {
         if item == data {
