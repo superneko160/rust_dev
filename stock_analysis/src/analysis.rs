@@ -21,10 +21,11 @@ pub struct Data {
     // volume: String,  // 売買高
 }
 
-/**
- * CSVデータの取得
- * @return: Result<Vec<Data>> CSVから取得したデータ
- */
+/// CSVデータの取得
+///
+/// # Returns
+///
+/// * CSVから取得したデータ
 pub fn read_csv() -> Result<Vec<Data>> {
     let csv_path = Path::new(CSV_PATH);
     let mut data = Vec::new();
@@ -37,13 +38,17 @@ pub fn read_csv() -> Result<Vec<Data>> {
     Ok(data)
 }
 
-/**
- * 前日比・前月比（％）が基準値（stdval）以上または以下のデータのみ取得
-* @pre_data: Vec<Data> CSVから取得したデータ
-* @stdval: f32 基準値
-* @over: bool true:基準値位以上、false:基準値以下
-* @return: Vec<Data> 整形後データ
- */
+/// 前日比・前月比（％）が基準値（stdval）以上または以下のデータのみ取得
+///
+/// # Arguments
+///
+/// * `pre_data` - CSVから取得したデータ
+/// * `stdval` - 基準値
+/// * `over` - true:基準値位以上、false:基準値以下
+///
+/// # Returns
+///
+/// * 整形後データ
 pub fn get_data_mtm_percent_over_stdval(pre_data: Vec<Data>, stdval: f32, over: bool) -> Vec<Data> {
     let mut data = Vec::new();
     for val in pre_data {
@@ -63,13 +68,17 @@ pub fn get_data_mtm_percent_over_stdval(pre_data: Vec<Data>, stdval: f32, over: 
     data
 }
 
-/**
- * 指定された月（target_month）のデータのみ取得
- * @pre_data: Vec<Data> CSVから取得したデータ
- * @target_year: u8 指定する年(指定しない場合は0を設定、指定する場合20xx年のxx(下2桁)指定)
- * @target_month: u8 指定する月(指定しない場合0を設定)
- * @return: Vec<Data> 整形後データ
- */
+/// 指定された月のデータのみ取得
+///
+/// # Arguments
+///
+/// * `pre_data` - CSVから取得したデータ
+/// * `target_year` - 指定する年(指定しない場合は0を設定、指定する場合20xx年のxx(下2桁)指定)
+/// * `target_month` - 指定する月(指定しない場合0を設定)
+///
+/// # Returns
+///
+/// * 整形後データ
 pub fn get_data_target_ym(pre_data: Vec<Data>, target_year: u8, target_month: u8) -> Vec<Data> {
     let mut data = Vec::new();
   // 0−12以外の数値が月指定の引数に設定された場合、空データを返す
@@ -108,10 +117,11 @@ pub fn get_data_target_ym(pre_data: Vec<Data>, target_year: u8, target_month: u8
     data
 }
 
-/**
- * データの表示
- * @data: Vec<Data> 表示するデータ
- */
+/// データの表示
+///
+/// # Arguments
+///
+/// * `data` - 表示するデータ
 pub fn print_data(data: Vec<Data>) {
     for val in data {
         println!("{}  {}  {}%", val.date, val.previous, val.previous_ratio);
