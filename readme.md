@@ -12,13 +12,13 @@ For learning Rust.
 rustc --version
 ```
 
-rustc 1.80.1 (3f5fd8dd4 2024-08-06) 
+rustc 1.80.1
 
 ```
 cargo --version
 ```
 
-cargo 1.80.1 (376290515 2024-07-16)
+cargo 1.80.1
 
 ## Run
 
