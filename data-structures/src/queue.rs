@@ -64,4 +64,40 @@ mod test_queue {
         assert_eq!(queue.dequeue(), Some(3));
         assert!(queue.is_empty());
     }
+
+    #[test]
+    fn queue_operations_items_struct() {
+
+        #[derive(Debug, PartialEq)]
+        pub struct Node {
+            id: u8,
+            elem: String,
+        }
+
+        let mut queue = Queue::new();
+
+        let node1 = Node {id: 1, elem: String::from("Element1")};
+        let node2 = Node {id: 2, elem: String::from("Element2")};
+
+        queue.enqueue(node1);
+        queue.enqueue(node2);
+
+        assert_eq!(queue.len(), 2);
+
+        let peek_result = queue.peek();
+        assert!(peek_result.is_some());
+        assert_eq!(peek_result.unwrap().id, 1);
+        assert_eq!(peek_result.unwrap().elem, "Element1");
+
+        let dequeue_result = queue.dequeue();
+        assert!(dequeue_result.is_some());
+        let dequeued_node = dequeue_result.unwrap();
+        assert_eq!(dequeued_node.id, 1);
+        assert_eq!(dequeued_node.elem, "Element1");
+
+        assert_eq!(queue.len(), 1);
+
+        queue.dequeue();
+        assert!(queue.is_empty());
+    }
 }

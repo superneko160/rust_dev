@@ -60,4 +60,40 @@ mod test_stack {
         assert_eq!(stack.pop(), Some(1));
         assert!(stack.is_empty());
     }
+
+    #[test]
+    fn stack_operations_items_struct() {
+
+        #[derive(Debug, PartialEq)]
+        pub struct Node {
+            id: u8,
+            elem: String,
+        }
+
+        let mut stack = Stack::new();
+
+        let node1 = Node {id: 1, elem: String::from("Element1")};
+        let node2 = Node {id: 2, elem: String::from("Element2")};
+
+        stack.push(node1);
+        stack.push(node2);
+
+        assert_eq!(stack.len(), 2);
+
+        let peek_result = stack.peek();
+        assert!(peek_result.is_some());
+        assert_eq!(peek_result.unwrap().id, 1);
+        assert_eq!(peek_result.unwrap().elem, "Element1");
+
+        let pop_result = stack.pop();
+        assert!(pop_result.is_some());
+        let popped_node = pop_result.unwrap();
+        assert_eq!(popped_node.id, 2);
+        assert_eq!(popped_node.elem, "Element2");
+
+        assert_eq!(stack.len(), 1);
+
+        stack.pop();
+        assert!(stack.is_empty());
+    }
 }
