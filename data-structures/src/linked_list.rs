@@ -61,7 +61,6 @@ impl LinkedList {
     }
 }
 
-// テストモジュール
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -103,13 +102,11 @@ mod tests {
     fn test_add_and_find_multiple_times() {
         let mut list = LinkedList::new();
         
-        // 複数の要素を追加
         let test_values = [1, 5, 10, 15, 20];
         for &value in &test_values {
             list.add(value);
         }
 
-        // すべての要素が見つかることを確認
         for &value in &test_values {
             assert!(list.find(value).is_some(), "値 {} が見つからない", value);
         }
