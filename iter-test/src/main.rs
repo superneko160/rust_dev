@@ -1,123 +1,112 @@
 /**
- * イテレータは連続したオブジェクトを順番に扱うための機能を提供するオブジェクト
- * イテレータはIteratorトレイトのインスタンス
+ * https://doc.rust-lang.org/std/iter/trait.Iterator.html
+ * イテレータ：連続したオブジェクトを順番に扱うための機能を提供するオブジェクト
+ * （Iteratorトレイトのインスタンス）
  * アダプタ：イテレータからイテレータを作成するメソッド
+ * イテレータのチェーン：複数のアダプタを連続して適用し、データ処理のフローを表現力豊かに記述できる書き方
+ * これにより、複雑なデータ操作を、中間のコレクションを生成せずに、シンプルに記述可能
+ * （中間コレクションが生成されない -> メモリ使用量を削減できる）
  */
-
 fn main() {
-    iter_zip(&[1,2,3], &[4,5,6]).for_each(|(x,y)|println!("{} {}", x, y));
-    iter_map(&[1,2,3]).for_each(|x| println!("{}", x));
-    iter_filter(&[0i32, 1, 2]).for_each(|x| println!("{}", x));
-    println!("{}", iter_fold(&[1, 2, 3]));
-    iter_collect(&[1,2,3]).iter().for_each(|x| println!("{}", x));
-    iter_enumerate(&['a', 'b', 'c']).for_each(|(x, y)| println!("{} {:?}", x, y));
-}
+    // 基本
+    {
+        let vec = vec![1, 2, 3, 4, 5];
 
-/// イテレータ同士の合成
-/// # Arguments
-/// * `list1` - 入力スライス
-/// * `list2` - 入力スライス
-/// # Returns
-/// イテレータ（数値、数値）
-fn iter_zip<'a>(list1: &'a [i32], list2: &'a [i32]) -> impl Iterator<Item = (&'a i32, &'a i32)> {
-    list1.iter().zip(list2.iter())
-}
+        // vecのイテレータ取得
+        let mut iter = vec.iter();
 
-/// 各要素に関数を適用したイテレータを作成
-/// # Arguments
-/// * `list` - 入力スライス
-/// # Returns
-/// イテレータ 数値
-fn iter_map<'a>(list: &'a [i32]) -> impl Iterator<Item = i32> + 'a {
-    list.iter().map(|x| 2 * x)
-}
-
-/// 各要素に関数を適用し、trueを返した要素だけを抽出したイテレータを作成
-/// # Arguments
-/// * `list` - 入力スライス
-/// # Returns
-/// イテレータ 数値
-fn iter_filter<'a>(list: &'a [i32]) -> impl Iterator<Item = &i32> {
-    list.iter().filter(|x| x.is_positive())
-}
-
-/// 各要素に関数を適用し、状態を更新し、その状態を返す
-/// # Arguments
-/// * `list` - 入力スライス
-/// # Returns
-/// 数値
-fn iter_fold(list: &[i32]) -> i32 {
-    list.iter().fold(0, |acc, x| acc + x)
-}
-
-/// イテレータの全要素をコレクションに変換
-/// # Arguments
-/// * `list` - 入力スライス
-/// # Returns
-/// コレクション
-fn iter_collect(list: &[i32]) -> Vec<i32> {
-    list.iter().map(|&x| x * 2).collect()
-}
-
-/// インデックスと要素の組み合わせを返すイテレータを生成
-/// # Arguments
-/// * `list` - 入力スライス
-/// # Returns
-/// イテレータ (usize, &T) 左側の値がインデックス、右側の値が要素
-fn iter_enumerate<T>(list: &[T]) -> impl Iterator<Item = (usize, &T)> {
-    list.iter().enumerate()
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_iter_zip() {
-        let list1 = vec![1, 2, 3];
-        let list2 = vec![4, 5, 6];
-        let result: Vec<_> = iter_zip(&list1, &list2).collect();
-        assert_eq!(result, vec![(&1, &4), (&2, &5), (&3, &6)]);
+        // next()で要素を1つずつ取得
+        while let Some(value) = iter.next() {
+            print!("{} ", value);
+        }
+        println!();
     }
 
-    #[test]
-    fn test_iter_map() {
-        let data = [1, 2, 3, 4, 5];
-        let result: Vec<_> = iter_map(&data).collect();
-        assert_eq!(result, vec![2, 4, 6, 8, 10]);
+    println!("===========");
+
+    // イテレータのアダプタ
+    {
+        // map、zip、filter、find、take、chain、enumerate、fold、collectなどが利用頻度高め
+
+        // find() 一致した要素をSomeで返す
+        let vec1 = vec![1, 2, 3, 4, 5];
+        let mut iter1 = vec1.iter();
+        println!("iter.find {:?}", iter1.find(|&&x| x == 4));
+
+        // take() 与えられた個数(usize)ぶんの要素を返し、それ以降の要素を無視するような、新たなイテレータを返す
+        let vec2 = vec![1, 2, 3, 4, 5];
+        let iter2 = vec2.iter();
+        let mut result = iter2.take(2);
+        while let Some(value) = result.next() {
+            print!("{} ", value);
+        }
+        println!();
     }
 
-    #[test]
-    fn test_iter_filter() {
-        let data = vec![-1, 2, -3, 4, -5];
-        // 正の整数のみを抽出
-        let result: Vec<i32> = iter_filter(&data).copied().collect();
-        assert_eq!(result, vec![2, 4]);
+    println!("===========");
+
+    // アダプタを組み合わせたイテレータチェーン
+    {
+        // ベクタから偶数の2乗を取得
+        let vec = vec![1, 2, 3, 4, 5, 6];
+
+        let squares_of_even: Vec<i32> = vec.iter()  // イテレータ取得
+            .filter(|&&x| x % 2 == 0)  // 偶数をフィルタリング
+            .map(|x| x * x)  // 各要素を2乗
+            .collect();  // 結果をベクタに集約
+
+        println!("{:?}", squares_of_even);
+
+        // 2つイテレータの各要素を+1したイテレータを作成
+        let vec1 = vec![1, 2, 3];
+        let vec2 = vec![11, 22, 33];
+
+        let chained_vec: Vec<i32> = vec1.iter()  // イテレータ取得
+            .chain(vec2.iter())  // イテレータの連結
+            .map(|x| x + 1)  // 各要素を+1
+            .collect();  //   // 結果をベクタに集約
+
+        println!("{:?}", chained_vec);
     }
 
-    #[test]
-    fn test_iter_fold() {
-        let data = vec![1, 2, -3];
-        let result: i32 = iter_fold(&data);
-        assert_eq!(result, 0);
+    println!("===========");
+
+    // イテレータのチェーンと所有権
+    // イテレータがベクタを借用しているあいだは、変更が許可されない
+    // イテレータの使用が終了すると、ベクタの変更が可能となる
+    {
+        let mut vec: Vec<u8> = vec![1, 2, 3, 4, 5];
+        let numbers = vec.iter()
+            .filter(|&&n| n % 2 == 0)
+            .map(|n| n  * n);
+
+        // cannot borrow `vec` as mutable because it is also borrowed as immutable
+        // mutable borrow occurs hererustcClick for full compiler diagnostic
+        // vec.push(6);  // vec は借用中なので変更できないとエラーが出る
+
+        for number in numbers {
+            print!("{} ", number);
+        }
+        println!();
+
+        // 借用が終わったら vec は変更可能
+        vec.push(6);
     }
 
-    #[test]
-    fn test_iter_collect() {
-        let data = [1, 2, 3, 4, 5];
-        assert_eq!(iter_collect(&data), vec![2, 4, 6, 8, 10]);
-    }
-    
-    #[test]
-    fn test_iter_enumerate() {
-        let list_int = vec![1, 2, 3, 4, 5];
-        let list_str = vec!["apple", "banana", "cherry"];
-        // 整数のスライスをテスト
-        let result_int: Vec<(usize, &i32)> = iter_enumerate(&list_int).collect();
-        assert_eq!(result_int, vec![(0, &1), (1, &2), (2, &3), (3, &4), (4, &5)]);
-        // 文字列のスライスをテスト
-        let result_str: Vec<(usize, &&str)> = iter_enumerate(&list_str).collect();
-        assert_eq!(result_str, vec![(0, &"apple"), (1, &"banana"), (2, &"cherry")]);
-    }
+    println!("===========");
 
+    // デバッグ
+    // inspect() チェーン内の各ステップでデータの状態を確認できる
+    {
+        let vec: Vec<u8> = vec![1, 2, 3, 4, 5];
+        let result: Vec<u8> = vec.iter()
+            .inspect(|n| println!("Original: {}", n))
+            .filter(|&&n| n % 2 == 0)
+            .inspect(|n| println!("Filtered: {}", n))
+            .map(|n| n * n)
+            .inspect(|n| println!("Mapped: {}", n))
+            .collect();
+
+        println!("{:?}", result);
+    }
 }
