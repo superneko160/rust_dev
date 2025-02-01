@@ -32,6 +32,11 @@ and
 cargo run
 ```
 
-## Reference
+## Rust Reference
 
- - [Open-Meteo Weather Forecast API](https://open-meteo.com/en/docs)
+- [Rust Programming Language](https://www.rust-lang.org/)
+- [std - Rust](https://doc.rust-lang.org/std/index.html)
+- [The Book（日本語版）](https://doc.rust-jp.rs/book-ja/)
+
+## WebAPI Reference
+- [Open-Meteo Weather Forecast API](https://open-meteo.com/en/docs)
