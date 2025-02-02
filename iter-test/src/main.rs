@@ -7,6 +7,8 @@
  * これにより、複雑なデータ操作を、中間のコレクションを生成せずに、シンプルに記述可能
  * （中間コレクションが生成されない -> メモリ使用量を削減できる）
  */
+use itertools::Itertools;
+
 fn main() {
     // 基本
     {
@@ -105,6 +107,27 @@ fn main() {
             .inspect(|n| println!("Filtered: {}", n))
             .map(|n| n * n)
             .inspect(|n| println!("Mapped: {}", n))
+            .collect();
+
+        println!("{:?}", result);
+    }
+
+    println!("===========");
+
+    // itertoolsクレート
+    {
+        let vec = vec![1, 2, 3, 4, 5, 6];
+        let result: Vec<i32> = vec.iter()
+            .combinations(2)  // 2つの組み合わせを生成(itertools)
+            .map(|pair| pair[0] * pair[1])
+            .collect();
+
+        println!("{:?}", result);
+
+        let items = vec!["apple", "banana", "avocado", "blueberry", "apricot"];
+        let result: Vec<&str> = items.into_iter()  // iter()では参照が、into_iter()では値が渡される
+            .filter(|item| item.starts_with('a'))  // aで始まる単語をフィルタ
+            .sorted()  // アルファベット順にソート(itertools)
             .collect();
 
         println!("{:?}", result);
