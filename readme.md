@@ -12,7 +12,7 @@ For learning Rust.
 rustc --version
 ```
 
-rustc 1.80.1
+rustc 1.81.1
 
 ```
 cargo --version
