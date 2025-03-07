@@ -18,7 +18,7 @@ rustc 1.80.1
 cargo --version
 ```
 
-cargo 1.80.1
+cargo 1.81.1
 
 ## Run
 
