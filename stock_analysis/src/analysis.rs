@@ -10,15 +10,16 @@ const CSV_PATH: &str = "/workspaces/rust_dev/stock_analysis/data/topixdtd_202108
 
 // 数値がStringなのは値にカンマが入っているため
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct Data {
     date: String,  // 日付
-    // open: String,  // 始値
-    // high: String,  // 高値
-    // low: String,  // 安値
-    // close: String,  // 終値
-    previous: String,  // 前日比・前月比
-    previous_ratio: f32,  // 前日比・前日比（％）
-    // volume: String,  // 売買高
+    open: String,  // 始値
+    high: String,  // 高値
+    low: String,  // 安値
+    close: String,  // 終値
+    previous: String,  // 前日比
+    previous_ratio: String,  // 前日比（％）
+    volume: String,  // 売買高
 }
 
 /// CSVデータの取得
@@ -38,6 +39,25 @@ pub fn read_csv() -> Result<Vec<Data>> {
     Ok(data)
 }
 
+/// 文字列を浮動小数点数(f32)に変換する
+///
+/// 文字列で表された比率値をf32型に変換
+/// 変換に失敗した場合は0.0を返す
+///
+/// Rust1.80->1.81への更新で以下のエラーが出るようになったため追加
+/// CSV deserialize error: record 1 (line: 1, byte: 56): field 2: invalid float literal
+/// 
+/// # Arguments
+///
+/// * `ratio_str` - 変換する比率を表す文字列
+///
+/// # Returns
+///
+/// * `f32` - 変換された浮動小数点数、変換失敗時は0.0
+fn parse_ratio(ratio_str: &str) -> f32 {
+    ratio_str.parse::<f32>().unwrap_or(0.0)
+}
+
 /// 前日比・前月比（％）が基準値（stdval）以上または以下のデータのみ取得
 ///
 /// # Arguments
@@ -52,15 +72,17 @@ pub fn read_csv() -> Result<Vec<Data>> {
 pub fn get_data_mtm_percent_over_stdval(pre_data: Vec<Data>, stdval: f32, over: bool) -> Vec<Data> {
     let mut data = Vec::new();
     for val in pre_data {
+        // 文字列からf32へ変換
+        let ratio = parse_ratio(&val.previous_ratio);
         // 前日比・前月比が基準値以上だった月だけ取得
         if over {
-            if val.previous_ratio >= stdval {
+            if ratio >= stdval {
                 data.push(val);
             }
         }
         // 前日比・前月比が基準値以下だった月だけ取得
         else {
-            if val.previous_ratio <= stdval {
+            if ratio <= stdval {
                 data.push(val);
             }
         }
