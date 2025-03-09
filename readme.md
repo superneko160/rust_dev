@@ -6,20 +6,6 @@ For learning Rust.
 
  - Dev Containers(Visual Studio Code Remote - Containers)
 
-## Versions
-
-```
-rustc --version
-```
-
-rustc 1.81.1
-
-```
-cargo --version
-```
-
-cargo 1.81.1
-
 ## Run
 
 ```
