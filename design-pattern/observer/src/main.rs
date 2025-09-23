@@ -2,6 +2,7 @@ use observer::delivery_status::*;
 use observer::observer::*;
 use observer::subject::*;
 use std::time::Duration;
+use std::thread::sleep;
 
 // Client
 fn main() {
@@ -15,17 +16,17 @@ fn main() {
     // 配送ステータスを「準備中」に更新
     delivery_tracker.set_delivery_status(&GettingReady);
     println!("-------");
-    std::thread::sleep(Duration::from_secs(2));
+    sleep(Duration::from_secs(2));
 
     // 配送ステータスを「準備中」に更新
     delivery_tracker.set_delivery_status(&ReadyForShipment);
     println!("-------");
-    std::thread::sleep(Duration::from_secs(2));
+    sleep(Duration::from_secs(2));
 
     // 配送ステータスを「配達中」に更新
     delivery_tracker.set_delivery_status(&Transporting);
     println!("-------");
-    std::thread::sleep(std::time::Duration::from_secs(2));
+    sleep(std::time::Duration::from_secs(2));
 
     // 配送ステータスを「配達完了」に更新
     delivery_tracker.set_delivery_status(&Delivered);
