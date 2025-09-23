@@ -62,3 +62,44 @@ fn main() {
     );
     println!("Rectangle Area: {}", rectangle.get_area());
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_area_circle() {
+        let radius = 5.0;
+        let circle = Circle{radius: radius};
+        let result = radius * radius * PI; 
+        assert_eq!(circle.get_area(), result);
+    }
+
+    #[test]
+    fn test_get_area_rectangle() {
+        let width = 7.0;
+        let height = 2.0;
+        let rectangle = Rectangle{width: width, height: height};
+        let result = width * height; 
+        assert_eq!(rectangle.get_area(), result);
+    }
+
+    #[test]
+    fn test_shape_factory_circle() {
+        let radius = 5.0;
+        let circle = ShapeFactory::new_shape(ShapeType::Circle { radius: radius });
+        let result = radius * radius * PI; 
+        assert_eq!(circle.get_area(), result);
+    }
+
+    #[test]
+    fn test_shape_factory_rectangle() {
+        let width = 7.0;
+        let height = 2.0;
+        let rectangle = ShapeFactory::new_shape(
+            ShapeType::Rectangle { width: width, height: height }
+        );
+        let result = width * height;
+        assert_eq!(rectangle.get_area(), result);
+    }
+}

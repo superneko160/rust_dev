@@ -31,3 +31,16 @@ impl DeliverySubject for DeliveryTracker {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_delivery_tracker_new() {
+        let tracker = DeliveryTracker::new();
+
+        // 初期状態でオブサーバリストが空であるのを確認
+        assert_eq!(tracker.observers.len(), 0);
+    }
+}

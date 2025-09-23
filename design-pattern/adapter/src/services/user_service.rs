@@ -51,3 +51,52 @@ impl UserService for UserServiceAdapter {
         format!("<{}>", user.name)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::DateTime;
+
+    #[test]
+    fn test_get_user_by_id() {
+        let adapter = UserServiceAdapter::new();
+        let user_id = 123;
+        let result = adapter.get_user_by_id(user_id);
+
+        // 必要なキーが存在するか確認
+        assert!(result.contains_key("user_id"));
+        assert!(result.contains_key("user_name"));
+        assert!(result.contains_key("user_age"));
+        assert!(result.contains_key("created_at"));
+
+        assert_eq!(result.get("user_id").unwrap(), &user_id.to_string());
+        assert_eq!(result.get("user_name").unwrap(), "Alice");  // UserModel::findの固定値
+        assert_eq!(result.get("user_age").unwrap(), "12");  // UserModel::findの固定値
+
+        let created_at = result.get("created_at").unwrap();
+        assert!(DateTime::parse_from_rfc3339(created_at).is_ok());
+    }
+
+    #[test]
+    fn test_create_user() {
+        let adapter = UserServiceAdapter::new();
+        let name = "Bob".to_string();
+        let age = 25;
+        let result = adapter.create_user(name.clone(), age);
+        
+        // 必要なキーが存在するか確認
+        assert!(result.contains_key("user_id"));
+        assert!(result.contains_key("user_name"));
+        assert!(result.contains_key("user_age"));
+        assert!(result.contains_key("status"));
+        assert!(result.contains_key("created_at"));
+        
+        assert_eq!(result.get("user_id").unwrap(), "99"); // UserModel::createの固定値
+        assert_eq!(result.get("user_name").unwrap(), &name);
+        assert_eq!(result.get("user_age").unwrap(), &age.to_string());
+        assert_eq!(result.get("status").unwrap(), "CREATED");
+        
+        let created_at = result.get("created_at").unwrap();
+        assert!(DateTime::parse_from_rfc3339(created_at).is_ok());
+    }
+}
