@@ -1,0 +1,15 @@
+{
+  "rust-analyzer.linkedProjects": [
+    "design-pattern/adapter/Cargo.toml",
+    "design-pattern/builder/Cargo.toml",
+    "design-pattern/command/Cargo.toml",
+    "design-pattern/factory_method/Cargo.toml",
+    "design-pattern/iterator/Cargo.toml",
+    "design-pattern/observer/Cargo.toml",
+    "design-pattern/state/Cargo.toml",
+    "design-pattern/strategy/Cargo.toml",
+    "lifetime/lifetime/Cargo.toml",
+    "lifetime/lifetime_elision/Cargo.toml",
+    "lifetime/lifetime_struct/Cargo.toml",
+  ],
+}
