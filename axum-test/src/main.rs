@@ -1,48 +1,58 @@
-use axum::{routing::{get, MethodRouter}, Router};
-use std::net::SocketAddr;
+use axum::{
+    response::Html,
+    routing::get,
+    Json,
+    Router,
+};
+use serde::Serialize;
 
-/**
- * webフレームワークaxumのテスト
- */
+#[derive(Serialize)]
+struct User {
+    id: u8,
+    name: String,
+}
+
 #[tokio::main]
 async fn main() {
     // ルーティング設定
     let app = Router::new()
-        .merge(root())
-        .merge(get_foo());
-    // ポート開設
-    let addr = SocketAddr::from(([127, 0, 0, 1], 7878));
-    println!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+        .route("/", get(root))
+        .route("/user", get(get_user))
+        .route("/axum", get(get_html));
+
+    // TCPリスナのバインド
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:7878")
         .await
         .unwrap();
+    println!("listening on {}", listener.local_addr().unwrap());
+
+    // サーバ起動
+    axum::serve(listener, app).await.unwrap();
 }
 
-/**
- * http://127.0.0.1:7878/
- */
-fn root() -> Router {
-    async fn handler() -> &'static str {
-        "Hello, World!"
-    }
-    route("/", get(handler))
+async fn root() -> &'static str {
+    "Hello, World!!"
 }
 
-/**
- * http://127.0.0.1:7878/foo
- */
-fn get_foo() -> Router {
-    async fn handler() -> &'static str {
-        "Hi from `GET /foo`"
-    }
-    route("/foo", get(handler))
+async fn get_user() -> Json<User> {
+    let user = User {
+        id: 1,
+        name: "Alice".to_string(),
+    };
+
+    Json(user)
 }
 
-/**
- * ルーティング
- * 最新バージョンでは、引数の部分をmethod_router: MethordRouter<()>と型指定する
- */
-fn route(path: &str, method_router: MethodRouter) -> Router {
-    Router::new().route(path, method_router)
+async fn get_html() -> Html<String> {
+    let contents = format!("
+        <!doctype html>
+        <html>
+            <title>Axum</title>
+        <body>
+            <h1>Hello, Axum!!</h1>
+        </body>
+        </html>
+    ");
+
+    Html(contents)
 }
