@@ -10,13 +10,13 @@ For learning Rust.
 
 ### Run
 
-```
+```sh
 cd project
 ```
 
 and
 
-```
+```sh
 cargo run
 ```
 
@@ -30,6 +30,12 @@ cargo clippy
 
 ```sh
 cargo fmt
+```
+
+If the `rustfmt` does not exist...
+
+```sh
+rustup component add rustfmt
 ```
 
 ## Rust Reference
