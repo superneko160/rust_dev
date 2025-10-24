@@ -20,10 +20,22 @@ and
 cargo run
 ```
 
+### Test
+
+```sh
+cargo test
+```
+
 ### Lint
 
 ```sh
 cargo clippy
+```
+
+If the `clippy` does not exist...
+
+```sh
+rustup component add clippy
 ```
 
 ### Format
