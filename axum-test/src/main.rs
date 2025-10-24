@@ -55,8 +55,7 @@ async fn create_user(Json(params): Json<User>) -> Json<User> {
 }
 
 async fn get_html() -> Html<String> {
-    let contents = format!(
-        "
+    let contents = "
         <!doctype html>
         <html>
             <title>Axum</title>
@@ -64,8 +63,7 @@ async fn get_html() -> Html<String> {
             <h1>Hello, Axum!!</h1>
         </body>
         </html>
-    "
-    );
+    ".to_string();
 
     Html(contents)
 }
