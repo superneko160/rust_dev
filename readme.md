@@ -6,7 +6,9 @@ For learning Rust.
 
  - Dev Containers(Visual Studio Code Remote - Containers)
 
-## Run
+## Usage
+
+### Run
 
 ```
 cd project
@@ -16,6 +18,18 @@ and
 
 ```
 cargo run
+```
+
+### Lint
+
+```sh
+cargo clippy
+```
+
+### Format
+
+```sh
+cargo fmt
 ```
 
 ## Rust Reference
