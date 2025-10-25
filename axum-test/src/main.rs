@@ -1,5 +1,5 @@
 use axum::{
-    extract::Path,
+    extract::{Form, Path},
     http::StatusCode,
     response::Html,
     response::IntoResponse,
@@ -14,15 +14,15 @@ struct User {
     name: String,
 }
 
+#[derive(Deserialize, Serialize)]
+struct FormInput {
+    name: String,
+    email: String,
+}
+
 #[tokio::main]
 async fn main() {
-    // ルーティング設定
-    let app = Router::new()
-        .route("/", get(root))
-        .route("/users/{id}", get(get_user))
-        .route("/users", post(create_user))
-        .route("/axum", get(get_html));
-    let app = app.fallback(handler_404);
+    let app = app();
 
     // TCPリスナのバインド
     let listener = tokio::net::TcpListener::bind("0.0.0.0:7878").await.unwrap();
@@ -32,7 +32,17 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn root() -> &'static str {
+fn app() -> Router {
+    // ルーティング設定
+    Router::new()
+        .route("/", get(index))
+        .route("/users/{id}", get(get_user))
+        .route("/users", post(create_user))
+        .route("/contact", get(contact).post(accept_contact))
+        .fallback(handler_404)
+}
+
+async fn index() -> &'static str {
     "Hello, World!!"
 }
 
@@ -54,18 +64,39 @@ async fn create_user(Json(params): Json<User>) -> Json<User> {
     Json(user)
 }
 
-async fn get_html() -> Html<String> {
-    let contents = "
+async fn contact() -> Html<String> {
+    let contents = r#"
         <!doctype html>
         <html>
-            <title>Axum</title>
+        <head>
+            <title>Axum Form</title>
+        </head>
         <body>
-            <h1>Hello, Axum!!</h1>
+            <form action="" method="post">
+                <label for="name">
+                    Enter your name:
+                    <input type="text" name="name">
+                </label>
+                <br>
+
+                <label>
+                    Enter your email:
+                    <input type="email" name="email">
+                </label>
+                <br>
+
+                <input type="submit" value="Subscribe!">
+            </form>
         </body>
         </html>
-    ".to_string();
+    "#
+    .to_string();
 
     Html(contents)
+}
+
+async fn accept_contact(Form(input): Form<FormInput>) -> Html<String> {
+    Html(format!("name: {} (email: {})", &input.name, &input.email))
 }
 
 async fn handler_404() -> impl IntoResponse {
