@@ -7,10 +7,16 @@ use axum::{
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Deserialize, Serialize)]
 struct User {
-    id: u8,
+    id: Uuid,
+    name: String,
+}
+
+#[derive(Deserialize)]
+struct UserWithoutId {
     name: String,
 }
 
@@ -46,7 +52,7 @@ async fn index() -> &'static str {
     "Hello, World!!"
 }
 
-async fn get_user(Path(user_id): Path<u8>) -> Json<User> {
+async fn get_user(Path(user_id): Path<Uuid>) -> Json<User> {
     let user = User {
         id: user_id,
         name: "Alice".to_string(),
@@ -55,11 +61,13 @@ async fn get_user(Path(user_id): Path<u8>) -> Json<User> {
     Json(user)
 }
 
-async fn create_user(Json(params): Json<User>) -> Json<User> {
+async fn create_user(Json(params): Json<UserWithoutId>) -> Json<User> {
     let user = User {
-        id: params.id,
+        id: Uuid::new_v4(),
         name: params.name,
     };
+
+    // ユーザ登録処理
 
     Json(user)
 }
@@ -131,7 +139,7 @@ mod tests {
         let response = app
             .oneshot(
                 Request::builder()
-                    .uri("/users/1")
+                    .uri("/users/95be61c6-ffdc-4283-8d3b-a5048a53cfbb")
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -145,7 +153,7 @@ mod tests {
     async fn test_create_user_returns_200() {
         let app = app();
 
-        let user_json = r#"{"id": 1, "name": "Bob"}"#;
+        let user_json = r#"{"name": "Alice"}"#;
 
         let response = app
             .oneshot(
