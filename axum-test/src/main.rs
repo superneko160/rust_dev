@@ -28,14 +28,11 @@ struct FormInput {
 
 #[tokio::main]
 async fn main() {
-    let app = app();
-
     // TCPリスナのバインド
     let listener = tokio::net::TcpListener::bind("0.0.0.0:7878").await.unwrap();
     println!("listening on {}", listener.local_addr().unwrap());
-
     // サーバ起動
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app()).await.unwrap();
 }
 
 fn app() -> Router {
@@ -122,9 +119,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_index_returns_200() {
-        let app = app();
-
-        let response = app
+        let response = app()
             .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
             .await
             .unwrap();
@@ -134,9 +129,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_user_returns_200() {
-        let app = app();
-
-        let response = app
+        let response = app()
             .oneshot(
                 Request::builder()
                     .uri("/users/95be61c6-ffdc-4283-8d3b-a5048a53cfbb")
@@ -151,11 +144,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_user_returns_200() {
-        let app = app();
-
         let user_json = r#"{"name": "Alice"}"#;
 
-        let response = app
+        let response = app()
             .oneshot(
                 Request::builder()
                     .method("POST")
@@ -172,9 +163,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_contact_returns_200() {
-        let app = app();
-
-        let response = app
+        let response = app()
             .oneshot(
                 Request::builder()
                     .uri("/contact")
@@ -189,11 +178,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_accept_contact_returns_200() {
-        let app = app();
-
         let form_data = "name=John&email=john@example.com";
 
-        let response = app
+        let response = app()
             .oneshot(
                 Request::builder()
                     .method("POST")
@@ -210,9 +197,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_non_existent_url_returns_404() {
-        let app = app();
-
-        let response = app
+        let response = app()
             .oneshot(
                 Request::builder()
                     .uri("/non-existent-path")
