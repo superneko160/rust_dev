@@ -2,8 +2,8 @@ use std::io::{self, Write};
 use rand::Rng;
 
 const HAND: [&str; 3] = ["グー", "チョキ", "パー"];
-const MIN_HAND: i32 = 0;
-const MAX_HAND: i32 = 2;
+const MIN_HAND: i8 = 0;
+const MAX_HAND: i8 = 2;
 
 #[derive(PartialEq, Debug)]
 enum GameResult {
@@ -12,9 +12,7 @@ enum GameResult {
     PlayerLose,
 }
 
-/**
- * CPUとコマンドライン上でじゃんけん
- */
+/// CPUとコマンドライン上でじゃんけん
 fn main() {
     loop {
         match play_round() {
@@ -40,8 +38,7 @@ fn play_round() -> GameResult {
 }
 
 /// プレイヤの手を取得
-/// @returns i32
-fn get_player_hand() -> i32 {
+fn get_player_hand() -> i8 {
     loop {
         print!("じゃんけんの手を選択してください(0:グー / 1:チョキ / 2:パー):");
         io::stdout().flush().expect("Failed to flush stdout");
@@ -57,16 +54,12 @@ fn get_player_hand() -> i32 {
 }
 
 /// CPUの手を取得
-/// @returns i32
-fn get_cpu_hand() -> i32 {
+fn get_cpu_hand() -> i8 {
     rand::thread_rng().gen_range(MIN_HAND..=MAX_HAND)
 }
 
 /// じゃんけんの勝敗を判定
-/// @param i32 プレイヤの手
-/// @param i32 CPUの手
-/// @returns GameResult
-fn judge_winner(player_hand: i32, cpu_hand: i32) -> GameResult {
+fn judge_winner(player_hand: i8, cpu_hand: i8) -> GameResult {
     match (player_hand - cpu_hand + 3) % 3 {
         0 => GameResult::Draw,
         1 => GameResult::PlayerLose,
@@ -76,15 +69,12 @@ fn judge_winner(player_hand: i32, cpu_hand: i32) -> GameResult {
 }
 
 /// プレイヤとCPUの手を表示
-/// @param i32 player_hand プレイヤの手
-/// @param i32 cpu_hand CPUの手
-fn display_hands(player_hand: i32, cpu_hand: i32) {
+fn display_hands(player_hand: i8, cpu_hand: i8) {
     println!("あなたの手: {}", HAND[player_hand as usize]);
     println!("CPUの手: {}", HAND[cpu_hand as usize]);
 }
 
 /// 勝敗を表示
-/// @param &GameResult
 fn display_result(result: &GameResult) {
     match result {
         GameResult::Draw => println!("あいこです"),
