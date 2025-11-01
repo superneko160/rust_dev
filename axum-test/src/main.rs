@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Form, Path},
+    extract::{Form, Path, Query},
     http::StatusCode,
     response::Html,
     response::IntoResponse,
@@ -8,6 +8,12 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+
+#[derive(Deserialize, Serialize)]
+struct Pagination {
+    page: usize,
+    per_page: usize,
+}
 
 #[derive(Deserialize, Serialize)]
 struct User {
@@ -39,6 +45,7 @@ fn app() -> Router {
     // ルーティング設定
     Router::new()
         .route("/", get(index))
+        .route("/list", get(list))
         .route("/users/{id}", get(get_user))
         .route("/users", post(create_user))
         .route("/contact", get(contact).post(accept_contact))
@@ -47,6 +54,10 @@ fn app() -> Router {
 
 async fn index() -> &'static str {
     "Hello, World!!"
+}
+
+async fn list(Query(pagination): Query<Pagination>) -> Json<Pagination> {
+    Json(pagination)
 }
 
 async fn get_user(Path(user_id): Path<Uuid>) -> Json<User> {
@@ -121,6 +132,21 @@ mod tests {
     async fn test_index_returns_200() {
         let response = app()
             .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_get_list_returns_200() {
+        let response = app()
+            .oneshot(
+                Request::builder()
+                    .uri("/list?page=2&per_page=33")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
             .await
             .unwrap();
 
