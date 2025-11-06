@@ -96,8 +96,34 @@ async fn test_accept_contact_returns_200() {
 }
 
 #[tokio::test]
+async fn test_accept_contact_returns_submitted_data() {
+    let form_data = "name=Alice&email=test@example.com";
+
+    let response = app()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/contact")
+                .header("content-type", "application/x-www-form-urlencoded")
+                .body(Body::from(form_data))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+        .await
+        .unwrap();
+    let body_str = String::from_utf8(body.to_vec()).unwrap();
+
+    assert!(body_str.contains("Alice"));
+    assert!(body_str.contains("test@example.com"));
+}
+
+#[tokio::test]
 async fn test_accept_contact_with_empty_name_returns_400() {
-    // 名前が空文字列の場合、400エラーを返す
     let form_data = "name=&email=john@example.com";
 
     let response = app()
@@ -116,9 +142,8 @@ async fn test_accept_contact_with_empty_name_returns_400() {
 }
 
 #[tokio::test]
-async fn test_accept_contact_with_invalid_email_returns_400() {
-    // メールアドレスの形式が不正な場合、400エラーを返す
-    let form_data = "name=John&email=invalid-email";
+async fn test_accept_contact_with_empty_name_shows_error_message() {
+    let form_data = "name=&email=john@example.com";
 
     let response = app()
         .oneshot(
@@ -133,11 +158,17 @@ async fn test_accept_contact_with_invalid_email_returns_400() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+
+    let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+        .await
+        .unwrap();
+    let body_str = String::from_utf8(body.to_vec()).unwrap();
+
+    assert!(body_str.contains("名前を入力してください"));
 }
 
 #[tokio::test]
 async fn test_accept_contact_with_empty_email_returns_400() {
-    // メールアドレスが空文字列の場合、400エラーを返す
     let form_data = "name=John&email=";
 
     let response = app()
@@ -156,9 +187,8 @@ async fn test_accept_contact_with_empty_email_returns_400() {
 }
 
 #[tokio::test]
-async fn test_accept_contact_with_both_empty_returns_400() {
-    // 名前とメールアドレスの両方が空文字列の場合、400エラーを返す
-    let form_data = "name=&email=";
+async fn test_accept_contact_with_invalid_email_returns_400() {
+    let form_data = "name=John&email=invalid-email";
 
     let response = app()
         .oneshot(
@@ -193,6 +223,78 @@ async fn test_accept_contact_with_email_without_at_returns_400() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn test_accept_contact_with_invalid_email_shows_error_message() {
+    let form_data = "name=John&email=invalid-email";
+
+    let response = app()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/contact")
+                .header("content-type", "application/x-www-form-urlencoded")
+                .body(Body::from(form_data))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+
+    let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+        .await
+        .unwrap();
+    let body_str = String::from_utf8(body.to_vec()).unwrap();
+
+    assert!(body_str.contains("正しいメールアドレスの形式で入力してください"));
+}
+
+#[tokio::test]
+async fn test_accept_contact_with_both_empty_returns_400() {
+    let form_data = "name=&email=";
+
+    let response = app()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/contact")
+                .header("content-type", "application/x-www-form-urlencoded")
+                .body(Body::from(form_data))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn test_accept_contact_with_both_empty_shows_multiple_errors() {
+    let form_data = "name=&email=";
+
+    let response = app()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/contact")
+                .header("content-type", "application/x-www-form-urlencoded")
+                .body(Body::from(form_data))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+
+    let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+        .await
+        .unwrap();
+    let body_str = String::from_utf8(body.to_vec()).unwrap();
+
+    assert!(body_str.contains("名前を入力してください"));
+    assert!(body_str.contains("メールアドレスを入力してください"));
 }
 
 #[tokio::test]
