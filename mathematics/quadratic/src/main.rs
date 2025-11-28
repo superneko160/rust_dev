@@ -26,33 +26,33 @@ fn solve_quadratic(a: f64, b: f64, c: f64) -> QuadraticAnswer {
     }
 }
 
-fn main() {
-    // x^2 - 5x + 6 = 0
-    // x = 3, 2
-    match solve_quadratic(1.0, -5.0, 6.0) {
+/// 二次方程式の解を表示する
+fn print_quadratic_answer(answer: QuadraticAnswer) {
+    match answer {
         QuadraticAnswer::TwoDistinctRealRoots(x1, x2) => {
             println!("x = {}, {}", x1, x2);
         },
-        _ => panic!("予期せぬ結果"),
-    }
-
-    // x^2 - 4x + 4 = 0
-    // x = 2
-    match solve_quadratic(1.0, -4.0, 4.0) {
         QuadraticAnswer::DoubleRoot(x) => {
             println!("x = {}", x);
         },
-        _ => panic!("予期せぬ結果"),
-    }
-
-    // x^2 - 2x + 5 = 0
-    // x = -1±2i 
-    match solve_quadratic(1.0, 2.0, 5.0) {
         QuadraticAnswer::TwoDistinctComplexRoots(real, imag) => {
             println!("x = {}±{}i", real, imag);
         },
-        _ => panic!("予期せぬ結果"),
     }
+}
+
+fn main() {
+    // x^2 - 5x + 6 = 0
+    // x = 3, 2
+    print_quadratic_answer(solve_quadratic(1.0, -5.0, 6.0));
+
+    // x^2 - 4x + 4 = 0
+    // x = 2
+    print_quadratic_answer(solve_quadratic(1.0, -4.0, 4.0));
+
+    // x^2 - 2x + 5 = 0
+    // x = -1±2i 
+    print_quadratic_answer(solve_quadratic(1.0, 2.0, 5.0));
 }
 
 #[cfg(test)]
