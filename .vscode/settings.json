@@ -11,6 +11,7 @@
     "lifetime/lifetime/Cargo.toml",
     "lifetime/lifetime_elision/Cargo.toml",
     "lifetime/lifetime_struct/Cargo.toml",
+    "mathematics/fraction/Cargo.toml",
     "mathematics/gcd/Cargo.toml",
     "mathematics/permutation_and_combination/Cargo.toml",
     "mathematics/points/Cargo.toml",
