@@ -1,5 +1,8 @@
 /// 最大公約数をユークリッド互除法で求める
-fn gcd(mut a: i32, mut b: i32) -> i32 {
+fn gcd(a: i32, b: i32) -> i32 {
+    let mut a = a.abs();
+    let mut b = b.abs();
+
     while b != 0 {
         let tmp = b;
         b = a % b;
@@ -20,5 +23,11 @@ mod tests {
     fn test_gcd() {
         let expect = 6;
         assert_eq!(gcd(48, 18), expect);
+    }
+
+    #[test]
+    fn test_gcd_negative_number() {
+        let expect = 6;
+        assert_eq!(gcd(-48, -18), expect);
     }
 }

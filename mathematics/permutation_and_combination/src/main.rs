@@ -2,6 +2,10 @@
 /// nPr = n (n-1)(n-2)...(n-r+1)
 /// ex) P(5, 3) = 5 * 4 * 3 = 60
 fn permutation(n: i32, r: i32) -> i32 {
+    if r < 0 || n < r {
+        return 0;
+    }
+
     let mut result = 1;
     for i in (n - r + 1..=n).rev() {
         result *= i;
@@ -25,6 +29,10 @@ fn factorial(n: i32) -> i32 {
 /// nCr = nPr / r!
 /// ex) C(4, 3) = 4P3 / 3! = 24 / 6 = 4 
 fn combination(n: i32, r: i32) -> i32 {
+    if r < 0 || n < r {
+        return 0;
+    }
+
     permutation(n, r) / factorial(r)
 }
 

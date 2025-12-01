@@ -6,6 +6,10 @@ enum QuadraticAnswer {
 
 /// 二次方程式 ax^2 + bx + c = 0 の解を求める
 fn solve_quadratic(a: f64, b: f64, c: f64) -> QuadraticAnswer {
+    if a.abs() < f64::EPSILON {
+        panic!("a = 0です!");
+    }
+
     // 判別式: b^2 - 4ac
     let discriminant = b * b - 4.0 * a * c;
 
@@ -50,7 +54,7 @@ fn main() {
     // x = 2
     print_quadratic_answer(solve_quadratic(1.0, -4.0, 4.0));
 
-    // x^2 - 2x + 5 = 0
+    // x^2 + 2x + 5 = 0
     // x = -1±2i 
     print_quadratic_answer(solve_quadratic(1.0, 2.0, 5.0));
 }
@@ -91,7 +95,7 @@ mod tests {
 
     #[test]
     fn test_two_distinct_complex_roots() {
-        // x^2 - 2x + 5 = 0
+        // x^2 + 2x + 5 = 0
         // x = -1±2i 
         match solve_quadratic(1.0, 2.0, 5.0) {
             QuadraticAnswer::TwoDistinctComplexRoots(real, imag) => {
@@ -102,5 +106,11 @@ mod tests {
             },
             _ => panic!("予期せぬ結果"),
         }
+    }
+
+    #[test]
+    #[should_panic(expected = "a = 0です!")]
+    fn test_linear_function() {
+        solve_quadratic(0.0, 2.0, 5.0);
     }
 }
